@@ -9,9 +9,16 @@
 #define worldx 300.0
 #define worldy 300.0
 using namespace std;
-void plotString(float a,float b);
+void plotString(float a,float b,float sy1);
 void plotCircle(float a, float b);
 void plot_Half_Circle(float a,float b,float w);
+void plotArrow(float a,float b);
+void plotrArrow(float a,float b,int stop);
+void plottarget(double x,double y);
+void tctr(double *t_start, double *t_end, double t_add){
+	*t_start=*t_end;
+	*t_end+=t_add;
+}
 class Component{
 public:
 	double parent_x, parent_y;
@@ -19,10 +26,12 @@ public:
 	double shift;
 	double width;
 	double height;
+	double sy1;
 	Component* component=NULL;
 	Component(){;}
 	Component(double r){this->r=r;}
 	virtual void plot()=0;
+	virtual void reset(float r)=0;
 };
 
 class Limbs:public Component{
@@ -32,6 +41,7 @@ public:
 		this->parent_y=parent_y;
 		this->r=r;
 	}
+	virtual void reset(float r)=0;
 	Limbs(){;}
 	Limbs(double r){this->r=r;}
 	void plot(){
@@ -57,6 +67,7 @@ public:
 		width=5.0;
 		height=13.0;
 	}	
+	void reset(float r){}
 	void reset(double parent_x, double parent_y, double r){
 		this->parent_x=parent_x;
 		this->parent_y=parent_y;
@@ -77,14 +88,15 @@ public:
 		width=5.0;
 		height=16.0;
 	}
-	void reset(double r){
+	void reset(float r){
 		this->r=r;
 		parent_x=0.0;
 		parent_y=-12.0;
 		shift=1.0;
 		width=5.0;
 		height=13.0;
-		component=NULL;
+		if(component!=NULL)
+				component->reset(r);
 	}
 };
 
@@ -95,10 +107,12 @@ public:
 		shift=3.0;
 		width=8.0;
 		height=20.0;
-	}	
+	}
+	void reset(float r){}	
 	void reset(double parent_x, double parent_y, double r){
 		this->parent_x=parent_x;
 		this->parent_y=parent_y;
+		//this->parent_x=
 		this->r=r;
 		shift=3.0;
 		width=8.0;
@@ -114,9 +128,9 @@ public:
 		parent_y=-17.0;
 		shift=3.0;
 		width=5.0;
-		height=15.0;
+		height=20.0;
 	}
-	void reset(double r){
+	void reset(float r){
 		this->r=r;
 		parent_x=0.0;
 		parent_y=-17.0;
@@ -133,16 +147,16 @@ public:
 		parent_x=0.0;
 		parent_y=45.0;
 		shift=0.0;
-		width=18.0;
+		width=15.0;
 		height=18.0;
 	}	
-	void reset(double r){
+	void reset(float r){
 		this->r=r;
 		parent_x=0.0;
 		parent_y=45.0;
 		shift=0.0;
-		width=20.0;
-		height=20.0;
+		width=15.0;
+		height=18.0;
 	}
 	void plot(){
 		glTranslatef(parent_x, parent_y, 0.0);
@@ -261,7 +275,7 @@ public:
 
 	void Limbshift(Component* limbs, double dy){
 		limbs->parent_y+=dy;
-		if(limbs->component!=NULL) Limbshift(limbs->component, -dy);
+		if(limbs->component!=NULL) Limbshift(limbs->component, dy);
 	}
 	void bodyMove(double dx, double dy, double dr){
 		x+=dx;
@@ -297,7 +311,7 @@ public:
 		//front=false;
 		//body->width+=-6.0*dt/t;
 		head->r+=20.0*dt/t;
-		head->width+=-5.0*dt/t;
+		head->width+=-3.0*dt/t;
 	}
 	void istep(double t, double t_start, double dt, double scale){
 		if(t>=t_start&&t<t_start+1/scale){	
@@ -462,6 +476,7 @@ public:
 
 class BowString:public Component{
 public:
+	//float sy1=0.0;
 	BowString(){;}
 	BowString(double r): Component(r){
 		parent_x=0.0;
@@ -470,13 +485,58 @@ public:
 		width=35.0;
 		height=50.0;
 	}
+	void reset(float r){
+		parent_x=0.0;
+		parent_y=0.0;
+		sy1=0.0;
+		shift=10.0;
+		width=35.0;
+		height=50.0;
+		if(component!=NULL)
+				component->reset(r);
+	}
 	void plot(){
 		//puts("Plot String");
 		glTranslatef(parent_x, parent_y, 0.0);
 		glRotatef(r,0,0,1);
 			glColor3f(1.0, 97.0/255.0, 0.0);
 			//plot_Half_Circle(height,width,width);
-			plotString(height,width);
+			plotString(height,width,sy1);
+		glRotatef(-r,0,0,1);
+		glTranslatef(-parent_x, -parent_y, 0.0);
+	}
+};
+
+class Arrow:public Component{
+public:
+	Arrow(){;}
+	Arrow(double r): Component(r){
+		parent_x=0.0;
+		parent_y=-12.0;
+		shift=10.0;
+		width=35.0;
+		height=50.0;
+		component=new BowString(r);
+	//	bs=component;
+	}
+	void reset(float r){
+		parent_x=0.0;
+		parent_y=-12.0;
+		shift=10.0;
+		width=35.0;
+		height=50.0;
+		if(component!=NULL)
+				component->reset(r);
+	}
+	void Shift(float dy)
+	{
+		parent_y-=dy;
+	}
+	void plot(){
+		glTranslatef(parent_x, parent_y, 0.0);
+		glRotatef(r,0,0,1);
+			glColor3f(0.1, 0.1, 0.1);
+			plotArrow(height,width);	
 		glRotatef(-r,0,0,1);
 		glTranslatef(-parent_x, -parent_y, 0.0);
 	}
@@ -494,6 +554,17 @@ public:
 		component=new BowString(r);
 	//	bs=component;
 	}
+	void reset(float r){
+	
+		parent_x=0.0;
+		parent_y=-12.0;
+		shift=10.0;
+		width=35.0;
+		height=50.0;
+		if(component!=NULL)
+			component->reset(r);
+	}
+
 	void plot(){
 		glTranslatef(parent_x, parent_y+width, 0.0);
 		glRotatef(r,0,0,1);
@@ -507,11 +578,99 @@ public:
 	}
 };
 
+class rArrow:public Component{
+public:
+	int stop;
+	rArrow(){;}
+	rArrow(double r): Component(r){
+		reset(0);
+	}
+	void reset(float r){
+		parent_x=0.0;
+		parent_y=0.0;
+		shift=10.0;
+		width=35.0;
+		height=80.0;
+		stop=0;
+		
+		if(component!=NULL)
+				component->reset(r);
+	}
+	void Shift(float ds)
+	{
+	//	parent_y+=(ds*sin(M_PI/6.0));
+	//	parent_x+=(ds*cos(M_PI/6.0));
+//		parent_y+=ds;
+		parent_x+=ds;
+	}
+	void plot(){
+		glTranslatef(parent_x, parent_y, 0.0);
+		glRotatef(r,0,0,1);
+			glColor3f(0.1, 0.1, 0.1);
+			plotrArrow(height,width,stop);	
+		glRotatef(-r,0,0,1);
+		glTranslatef(-parent_x, -parent_y, 0.0);
+	}
+};
+
+class Target{
+public:
+	rArrow* arrow1;
+	rArrow* arrow2;
+	rArrow* arrow3;
+	float x;
+	float y;
+
+	Target(){
+		arrow1=new rArrow(0);
+		arrow2=new rArrow(0);
+		arrow3=new rArrow(0);
+		x=150;
+		y=150;
+	}
+	void reset(){
+		arrow1->reset(0);
+		arrow2->reset(0);
+		arrow3->reset(0);
+		
+	}
+	void plot(){
+		plottarget(x,y);
+		arrow1->plot();
+		arrow2->plot();
+		arrow3->plot();
+	}
+	void shift1(double dy,double tx,double ty)
+	{
+		arrow1->parent_y=ty;
+		if(arrow1->parent_x<=tx)				
+			arrow1->Shift(dy);
+		else
+			arrow1->stop=1;
+	}
+	void shift2(double dy,double tx,double ty)
+	{
+		arrow2->parent_y=ty;
+		if(arrow2->parent_x<=tx)				
+			arrow2->Shift(dy);
+		else
+			arrow2->stop=1;
+	}
+	
+	void shift3(double dy,double tx,double ty)
+	{
+		arrow3->parent_y=ty;
+		if(arrow3->parent_x<=tx)				
+			arrow3->Shift(dy);
+		else
+			arrow3->stop=1;
+	}
+	
+
+};
 
 
 
-float sx1=0.0;
-float sy1=0.0;
 double t_pre=0.0;
 float centx,centy,topx,topy;
 Person* zmin=NULL;
@@ -519,23 +678,71 @@ Person* leo=NULL;
 Bow* bw=NULL;
 Bow* bw2=NULL;
 BowString *bs=NULL;
-
+BowString *bs2=NULL;
+Arrow *ar=NULL;
+Arrow *ar2=NULL;
+Target* ztarget=NULL;
 void init(void){
 	glClearColor(1.0,1.0,1.0,0.0);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0.0, worldx,0.0, worldy);
 }
-void plotString(float a,float b)
+void plotArrow(float a,float b)
+{
+	glBegin(GL_LINE_STRIP);
+	glVertex2i(0,0);
+	glVertex2i(-a,0);
+	glEnd();
+}
+
+void plotrArrow(float a,float b,int stop)
+{
+	glBegin(GL_POLYGON);
+	glColor3f(255.0/255.0,140.0/255.0,0.0/255.0);
+	glVertex2i(-a,2);
+	glVertex2i(-a+10,0);
+	glVertex2i(-a,-2);
+	glEnd();
+	glBegin(GL_POLYGON);
+	if(stop==1)
+		glColor3f(0.0/255.0,0.0/255.0,0.0/255.0);
+	else
+		glColor3f(211.0/255.0,211.0/255.0,211.0/255.0);
+	glVertex2i(0,0);
+	glVertex2i(0,1.5);
+	glVertex2i(1.5,0);
+	glVertex2i(0,-1.5);
+	glEnd();
+
+	glColor3f(192.0/255.0,192.0/255.0,192.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(0,0.6);
+	glVertex2f(-a,0.6);
+	glVertex2f(-a,-0.6);
+	glVertex2f(0.0,-0.6);
+
+	glEnd();
+}
+
+void plotString(float a,float b,float sy1)
 {
 	glBegin(GL_LINE_STRIP);
 	glVertex2i(a,b*cos(75.0/360.0*2.0*M_PI));
-	glVertex2i(sx1,sy1);
+	glVertex2i(0.0,sy1+b*cos(75.0/360.0*2.0*M_PI));
 	glVertex2i(-a,b*cos(75.0/360.0*2.0*M_PI));
 	glEnd();
 }
 void plotCircle(float a, float b){
 	float n_side=30;
 	glBegin(GL_POLYGON);
+	for(int i=0;i<n_side;i++){
+		glVertex2i(a*cos(i/n_side*2*M_PI), b*sin(i/n_side*2*M_PI));
+	}
+	glEnd();
+}
+void plotCircleLine(float a, float b){
+	float n_side=30;
+	glBegin(GL_LINE_LOOP);
 	for(int i=0;i<n_side;i++){
 		glVertex2i(a*cos(i/n_side*2*M_PI), b*sin(i/n_side*2*M_PI));
 	}
@@ -566,7 +773,7 @@ void lwalkpic(double t,double t_start, double t_end){
 		double dt=t-t_pre;
 		t_pre=t;
 		if(leo==NULL) {
-			leo=new Person(100,100);
+			leo=new Person(150,100);
 			leo->body->R=0.0;
 			leo->body->G=0.0;
 			leo->body->B=0.0;
@@ -577,16 +784,15 @@ void lwalkpic(double t,double t_start, double t_end){
 			bw2->G=200.0/255.0;
 			bw2->B=255.0/255.0;
 	*/	}
-		/*if(curling_2==NULL) {
-			curling_2=new Curling(0.0);
-			curling_2->R=130.0/255.0;
-			curling_2->G=90.0/255.0;
-			curling_2->B=255.0/255.0;
-		}*/
-		if(leo->left_forearm->component==NULL) leo->take(leo->left_forearm, bw2);
+		
+		//if(leo->left_forearm->component==NULL) leo->take(leo->left_forearm, bw2);
 		//if(leo->right_forearm->component==NULL) leo->take(leo->right_forearm, curling_2);
+		
+		
 		if(t<1) ;
 		else if(t<2)leo->bodyToside(1.0, dt);
+		zmin->setfront(100,200);
+		zmin->plot();
 		leo->istep(t, 2.0, dt, 2);
 		leo->lstep(t, 2.5, dt, 2);
 		leo->rstep(t, 3.25, dt, 2);
@@ -600,62 +806,223 @@ void lwalkpic(double t,double t_start, double t_end){
 		leo->plot();
 	}
 }
-void firstpic(double t,double t_start, double t_end){
+void zshot(double t,double t_start, double t_end){
 	if(t>=t_start&&t<t_end){	
-		double dt=t-t_pre;
+		//double dt=t-t_pre;
+		//t-=t_start;
 		t-=t_start;
-		if(zmin==NULL) {zmin=new Person(150,200);zmin->body->R=0.0;zmin->body->G=0.0;zmin->body->B=0.8;}
+		double dt=t-t_pre;
+		t_pre=t;
+		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=0.0;zmin->body->G=0.0;zmin->body->B=0.8;}
+		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
 		if(bw==NULL) 
 				bw=new Bow(-90.0);
+		if(bw2==NULL) 
+				bw2=new Bow(-90.0);
+		
+		if(ar==NULL)
+				ar=new Arrow(90.0);
+
+		if(ar2==NULL)
+				ar2=new Arrow(90.0);
+
 		if(zmin->left_forearm->component==NULL) {
 				zmin->take(zmin->left_forearm, bw);
-		//		zmin->take(zmin->right_forearm,bw->component);
+				zmin->take(zmin->right_forearm,ar);
+		}
+		if(leo->left_forearm->component==NULL) {
+				leo->take(leo->left_forearm, bw2);
+				leo->take(leo->right_forearm,ar2);
 		}
 		if(t<1)
 		{
+			zmin->plot();
+		}
+		else if(t<2)
+		{
 			zmin->headToside(1.0,dt);
-			zmin->plot();
-			t_pre=t;
-		}
-		else if(t<6){
-			zmin->oLimbsrotate(zmin->left_arm, dt*18);
-			zmin->oLimbsrotate(zmin->right_arm, dt*18);
-			zmin->plot();
-			t_pre=t;
-		}
-		else if(t<10)
-		{
-			zmin->Limbshift(zmin->right_forearm,dt*1);
-			zmin->plot();
-			t_pre=t;
-		}
-		else if(t<10)
-		{
-			zmin->plot();
-			t_pre=t;
-		}
+			zmin->oLimbsrotate(zmin->left_thigh,dt*5);
+			zmin->oLimbsrotate(zmin->right_thigh,-dt*5);
 
+			zmin->plot();
+			leo->plot();
+			t_pre=t;
+		}
+		else if(t<5){
+			float dangle=90.0/3.0;
+			zmin->oLimbsrotate(zmin->left_arm, dt*dangle);
+			zmin->oLimbsrotate(zmin->right_arm, dt*dangle);
+			zmin->plot();
+			leo->plot();
+			t_pre=t;
+		}
+		else if(t<8)
+		{
+			zmin->Limbshift(zmin->right_forearm,dt*4);
+			double *tmpy=&(zmin->left_forearm->component->component->sy1);
+			*tmpy=*tmpy-dt*4;
+			zmin->plot();
+			leo->plot();
+			t_pre=t;
+		}
+		else if(t<9)
+		{
+			ar->Shift(dt*200);
+			zmin->plot();
+			leo->plot();
+			t_pre=t;
+		}
+		
+			leo->plot();
 	}
 
 }
 
 void secondpic(double t, double t_start, double t_end){
 	if(t>=t_start&&t<t_end){	
-		//t=t-t_start;
-		glPushMatrix();
-		lwalkpic(t,t_start,t_end);
-		glPopMatrix();
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		if(ztarget==NULL)
+				ztarget=new Target();
+		if(t<0.1);
+		if(t<3)
+		{
+			ztarget->plot();
+			ztarget->shift1(dt*100,150,160);
+			ztarget->shift2(dt*80,140,140);
+			ztarget->shift3(dt*130,110,150);
+		
+		}
+		else if(t<3.5)
+		{
+			ztarget->plot();
+			ztarget->reset();
+			
+		}
+		else if(t<10)
+		{
+			ztarget->plot();
+			ztarget->shift1(dt*100,170,170);
+			ztarget->shift2(dt*80,140,140);
+			ztarget->shift3(dt*130,110,150);
+		}
+	
 	}
 }
 
+void lshot(double t,double t_start, double t_end){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=0.0;zmin->body->G=0.0;zmin->body->B=0.8;}
+		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
+		if(bw==NULL) 
+				bw=new Bow(-90.0);
+		if(bw2==NULL) 
+				bw2=new Bow(-90.0);
+		
+		if(ar==NULL)
+				ar=new Arrow(90.0);
 
+		if(ar2==NULL)
+				ar2=new Arrow(90.0);
+
+		if(zmin->left_forearm->component==NULL) {
+				zmin->take(zmin->left_forearm, bw);
+				zmin->take(zmin->right_forearm,ar);
+		}
+		if(leo->left_forearm->component==NULL) {
+				leo->take(leo->left_forearm, bw2);
+				leo->take(leo->right_forearm,ar2);
+		}
+		zmin->setfront(100,200);
+		if(t<1){
+			leo->plot();
+		}
+		else if(t<2)
+		{
+			leo->headToside(1.0,dt);
+			leo->oLimbsrotate(leo->left_thigh,dt*5);
+			leo->oLimbsrotate(leo->right_thigh,-dt*5);
+			leo->plot();
+			t_pre=t;
+		}
+		else if(t<5){
+			float dangle=90.0/3.0;
+			leo->oLimbsrotate(leo->left_arm, dt*dangle);
+			leo->oLimbsrotate(leo->right_arm, dt*dangle);
+			//zmin->plot();
+			leo->plot();
+			t_pre=t;
+		}
+		else if(t<8)
+		{
+			leo->Limbshift(leo->right_forearm,dt*4);
+			double *tmpy=&(leo->left_forearm->component->component->sy1);
+			*tmpy=*tmpy-dt*4;
+			leo->plot();
+			//zmin->plot();
+			t_pre=t;
+		}
+		else if(t<10)
+		{
+			ar2->Shift(dt*200);
+			//zmin->plot();
+			leo->plot();
+			t_pre=t;
+		}
+		zmin->plot();
+	}
+
+}
+
+void plottarget(double x,double y)
+{
+		float Radius_a=100;
+		float Radius_b=100;
+		float R,G,B;
+		glTranslatef(x,y,0.0);
+//		glRotatef(10,0,0,1);
+		for(int idx=1;idx<=10;idx++)
+		{
+			if(idx<=2)
+			{	R=1;G=1;B=1;
+			}else if(idx<=4)
+			{	R=0.1;G=0.1;B=0.1;
+			}else if(idx<=6)
+			{	R=0;G=0;B=1;
+			}else if(idx<=8)
+			{	R=1;G=0;B=0;
+			}else if(idx<=10)
+			{	R=1;G=1;B=0;
+			}	
+			glColor3f(R,G,B);
+			plotCircle(Radius_a,Radius_b);
+			glColor3f(0.0,0.0,0.0);
+			plotCircleLine(Radius_a,Radius_b);
+			Radius_a-=10;
+			Radius_b-=10;
+		}
+//		glRotatef(-10,0,0,1);
+		glTranslatef(-x,-y,0);
+}
 void display(void)
 {
 	double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 	glClear(GL_COLOR_BUFFER_BIT);
+	double t_start, t_end;
+	t_start=t_end=0.0;
 	glPushMatrix();
-		firstpic(t,0.0, 10.0);
-		secondpic(t,10.0,14.0);
+		//plottarget(150.0,150.0);
+			
+		tctr(&t_start, &t_end, 8);
+		secondpic(t, t_start, t_end);
+		tctr(&t_start, &t_end, 9);
+		zshot(t, t_start, t_end);
+		tctr(&t_start, &t_end, 10);
+		lshot(t, t_start, t_end);
 //		squatpic(t,14.0,19.0);
 
 	glPopMatrix();
