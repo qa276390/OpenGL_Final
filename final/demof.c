@@ -3,22 +3,39 @@
 #include <GL/freeglut.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "string.h"
+#include <string>
+#include <cstring>
 #include "math.h"
 #define _USE_MATH_DEFINES
 #define worldx 300.0
 #define worldy 300.0
 using namespace std;
+void *font=GLUT_BITMAP_TIMES_ROMAN_24;
+void *font_10=GLUT_BITMAP_TIMES_ROMAN_10;
+void *font_12=GLUT_BITMAP_HELVETICA_12;
 void plotString(float a,float b,float sy1);
 void plotCircle(float a, float b);
 void plot_Half_Circle(float a,float b,float w);
 void plotArrow(float a,float b);
 void plotrArrow(float a,float b,int stop);
 void plottarget(double x,double y);
+void Ground();
+void ScoreBar(int zs,int ls);
 void tctr(double *t_start, double *t_end, double t_add){
 	*t_start=*t_end;
 	*t_end+=t_add;
 }
+void output(double x, double y,char *string)
+{
+	int len,i;
+	glRasterPos2f(x,y);
+	len=strlen(string);
+	for(i=0;i<len;i++)
+	{
+		glutBitmapCharacter(font_12,string[i]);
+	}
+}
+
 class Component{
 public:
 	double parent_x, parent_y;
@@ -813,7 +830,8 @@ void zshot(double t,double t_start, double t_end){
 		t-=t_start;
 		double dt=t-t_pre;
 		t_pre=t;
-		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=0.0;zmin->body->G=0.0;zmin->body->B=0.8;}
+		Ground();
+		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=1.0;zmin->body->G=1.0;zmin->body->B=1.0;}
 		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
 		if(bw==NULL) 
 				bw=new Bow(-90.0);
@@ -878,15 +896,18 @@ void zshot(double t,double t_start, double t_end){
 
 }
 
-void secondpic(double t, double t_start, double t_end){
+void ztarg(double t, double t_start, double t_end){
 	if(t>=t_start&&t<t_end){	
 		t-=t_start;
 		double dt=t-t_pre;
 		t_pre=t;
 		if(ztarget==NULL)
 				ztarget=new Target();
-		if(t<0.1);
-		if(t<3)
+		if(t<1){
+			ztarget->reset();
+			ztarget->plot();
+		}
+		if(t<5)
 		{
 			ztarget->plot();
 			ztarget->shift1(dt*100,150,160);
@@ -894,7 +915,7 @@ void secondpic(double t, double t_start, double t_end){
 			ztarget->shift3(dt*130,110,150);
 		
 		}
-		else if(t<3.5)
+		else if(t<5.5)
 		{
 			ztarget->plot();
 			ztarget->reset();
@@ -916,6 +937,7 @@ void lshot(double t,double t_start, double t_end){
 		t-=t_start;
 		double dt=t-t_pre;
 		t_pre=t;
+		Ground();
 		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=0.0;zmin->body->G=0.0;zmin->body->B=0.8;}
 		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
 		if(bw==NULL) 
@@ -1008,6 +1030,122 @@ void plottarget(double x,double y)
 //		glRotatef(-10,0,0,1);
 		glTranslatef(-x,-y,0);
 }
+void ScoreBar(int zs,int ls)
+{
+	double s=1;
+	glColor3f(120.0/255.0,0.0/255.0,0.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(5-s,270-s);
+	glVertex2f(95+s,270-s);
+	glVertex2f(95+s,290+s);
+	glVertex2f(5-s,290+s);
+	glVertex2f(5-s,270-s);
+	glEnd();
+
+	glColor3f(220.0/255.0,20.0/255.0,60.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(5,270);
+	glVertex2f(95,270);
+	glVertex2f(95,290);
+	glVertex2f(5,290);
+	glVertex2f(5,270);
+	glEnd();
+
+//inning ban
+	glColor3f(255.0/255.0,0.0/255.0,255.0/255.0);
+	glBegin(GL_POLYGON);
+
+	glVertex2f(65,270);
+	glVertex2f(75,270);
+	glVertex2f(75,290);
+	glVertex2f(65,290);
+	glVertex2f(65,270);
+	glEnd();
+//nation
+	glColor3f(0.0/255.0,0.0/255.0,0.0/255.0);
+	char* twn="TWN";
+	char* mex="MEX";
+	output(10,283,twn);
+	output(10,273,mex);
+//inning
+	char *tin="0";
+	char *xin="4";
+	output(70,283,tin);
+	output(70,273,xin);
+//score
+	char tsc[3];
+	sprintf(tsc,"%d",zs);
+	char xsc[3];
+	sprintf(xsc,"%d",ls);
+	output(85,283,tsc);
+	output(85,273,xsc);
+
+}
+void Kanban(double x,double y)
+{
+	glColor3f(0.0/255.0,0.0/255.0,139.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(x,y);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80+6.5,y+30);
+	glVertex2f(x+6.5,y+30);
+	glVertex2f(x,y);
+	glEnd();
+
+	glColor3f(0.0/255.0,0.0/255.0,205.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(x,y);
+	glVertex2f(x+79,y);
+	glVertex2f(x+79+6.5,y+30);
+	glVertex2f(x+6.5,y+30);
+	glVertex2f(x,y);
+	glEnd();
+}
+void Ground()
+{
+	ScoreBar(0,0);
+//Kanban
+	for(int idx=0;idx<6;idx++)
+	{
+		Kanban(80*idx,230);
+	}
+//Grass
+	glColor3f(124.0/255.0,252.0/255.0,0.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(0,0);
+	glVertex2f(300,0);
+	glVertex2f(300,230);
+	glVertex2f(0,230);
+	glVertex2f(0,0);
+	glEnd();
+//White Line
+
+	glColor3f(255.0/255.0,252.0/255.0,255.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(85,0);
+	glVertex2f(90,0);
+	glVertex2f(140,230);
+	glVertex2f(135,230);
+	glVertex2f(85,0);
+	glEnd();
+//White Line
+
+	glColor3f(255.0/255.0,252.0/255.0,255.0/255.0);
+	glBegin(GL_POLYGON);
+	glVertex2f(0,150);
+	glVertex2f(90.0+32.0,150);
+	glVertex2f(90.0+32.5,155);
+	glVertex2f(0,155);
+	glVertex2f(0,150);
+	glEnd();
+	
+//Kanban
+	for(int idx=0;idx<6;idx++)
+	{
+		Kanban(80*idx,0);
+	}
+
+}
 void display(void)
 {
 	double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
@@ -1017,12 +1155,13 @@ void display(void)
 	glPushMatrix();
 		//plottarget(150.0,150.0);
 			
-		tctr(&t_start, &t_end, 8);
-		secondpic(t, t_start, t_end);
+
 		tctr(&t_start, &t_end, 9);
 		zshot(t, t_start, t_end);
 		tctr(&t_start, &t_end, 10);
 		lshot(t, t_start, t_end);
+		tctr(&t_start, &t_end, 8);
+		ztarg(t, t_start, t_end);
 //		squatpic(t,14.0,19.0);
 
 	glPopMatrix();
