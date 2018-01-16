@@ -13,6 +13,7 @@ using namespace std;
 void *font=GLUT_BITMAP_TIMES_ROMAN_24;
 void *font_10=GLUT_BITMAP_TIMES_ROMAN_10;
 void *font_12=GLUT_BITMAP_HELVETICA_12;
+void *font_18=GLUT_BITMAP_HELVETICA_18;
 void plotString(float a,float b,float sy1);
 void plotCircle(float a, float b);
 void plot_Half_Circle(float a,float b,float w);
@@ -21,18 +22,20 @@ void plotrArrow(float a,float b,int stop);
 void plottarget(double x,double y);
 void Ground();
 void ScoreBar(int zs,int ls);
+void zshot(double t,double t_start, double t_end,double zs, double ls);
+
 void tctr(double *t_start, double *t_end, double t_add){
 	*t_start=*t_end;
 	*t_end+=t_add;
 }
-void output(double x, double y,char *string)
+void output(double x, double y,char *string,void *f)
 {
 	int len,i;
 	glRasterPos2f(x,y);
 	len=strlen(string);
 	for(i=0;i<len;i++)
 	{
-		glutBitmapCharacter(font_12,string[i]);
+		glutBitmapCharacter(f,string[i]);
 	}
 }
 
@@ -64,7 +67,7 @@ public:
 	void plot(){
 		glTranslatef(parent_x, parent_y, 0.0);
 		glRotatef(r,0,0,1);
-			glColor3f(0, 0, 0);
+			glColor3f(139.0/255.0, 69.0/255.0, 19.0/255.0);
 			glRectf(-width/2-0.8, shift+0.8, width/2+0.8, shift-height-0.8);
 			glColor3f(1.0, 215.0/255.0, 200.0/255.0);
 			glRectf(-width/2, shift, width/2, shift-height);
@@ -179,7 +182,7 @@ public:
 		glTranslatef(parent_x, parent_y, 0.0);
 		glRotatef(r,0,0,1);
 			glColor3f(0.0, 0.0, 0.0);
-			plotCircle(width+0.8, height+0.8);
+		//	plotCircle(width+0.8, height+0.8);
 			glColor3f(1.0, 215.0/255.0, 200.0/255.0);
 			plotCircle(width, height);
 		glRotatef(-r,0,0,1);
@@ -200,7 +203,7 @@ public:
 	}
 	void plot(){
 		glColor3f(0, 0, 0);
-		glRectf(-width/2-0.8, 30.0+0.8, width/2+0.8, 0.0-0.8);
+		//glRectf(-width/2-0.8, 30.0+0.8, width/2+0.8, 0.0-0.8);
 		glColor3f(R,G,B);
 		glRectf(-width/2, 30.0, width/2, 0.0);
 	}
@@ -651,6 +654,14 @@ public:
 		arrow3->reset(0);
 		
 	}
+	void reset2()
+	{
+		arrow2->reset(0);
+	}
+	void reset3()
+	{
+		arrow3->reset(0);
+	}
 	void plot(){
 		plottarget(x,y);
 		arrow1->plot();
@@ -699,6 +710,7 @@ BowString *bs2=NULL;
 Arrow *ar=NULL;
 Arrow *ar2=NULL;
 Target* ztarget=NULL;
+Target* ltarget=NULL;
 void init(void){
 	glClearColor(1.0,1.0,1.0,0.0);
 	glMatrixMode(GL_PROJECTION);
@@ -823,7 +835,9 @@ void lwalkpic(double t,double t_start, double t_end){
 		leo->plot();
 	}
 }
-void zshot(double t,double t_start, double t_end){
+
+
+void finalscene(double t,double t_start, double t_end){
 	if(t>=t_start&&t<t_end){	
 		//double dt=t-t_pre;
 		//t-=t_start;
@@ -854,6 +868,362 @@ void zshot(double t,double t_start, double t_end){
 		}
 		if(t<1)
 		{
+
+		}
+		else if(t<2)
+		{
+				leo->setfront(80,100);
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+		}
+		else if(t<3)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+		}
+		else if(t<4)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(160,190,"27",font_18);
+				glColor3f(1,0,0);
+				output(140,90,"28",font_18);
+		}
+		else if(t<5)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(160,190,"27",font_18);
+				glColor3f(1,0,0);
+				output(140,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(170,190,"27",font_18);
+		}
+		else if(t<6)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(160,190,"27",font_18);
+				glColor3f(1,0,0);
+				output(140,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(170,190,"27",font_18);
+				glColor3f(1,0,0);
+				output(150,90,"28",font_18);
+		}
+		else if(t<11)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(160,190,"27",font_18);
+				glColor3f(1,0,0);
+				output(140,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(170,190,"27",font_18);
+				glColor3f(1,0,0);
+				output(150,90,"28",font_18);
+				glColor3f(1,0,0);
+				output(160,90,"Win!!",font);
+		}
+			zmin->plot();
+			leo->plot();
+	}
+
+}
+
+void firstscene(double t,double t_start, double t_end){
+	if(t>=t_start&&t<t_end){	
+		//double dt=t-t_pre;
+		//t-=t_start;
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		Ground();
+		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=1.0;zmin->body->G=1.0;zmin->body->B=1.0;}
+		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
+		if(bw==NULL) 
+				bw=new Bow(-90.0);
+		if(bw2==NULL) 
+				bw2=new Bow(-90.0);
+		
+		if(ar==NULL)
+				ar=new Arrow(90.0);
+
+		if(ar2==NULL)
+				ar2=new Arrow(90.0);
+
+		if(zmin->left_forearm->component==NULL) {
+				zmin->take(zmin->left_forearm, bw);
+				zmin->take(zmin->right_forearm,ar);
+		}
+		if(leo->left_forearm->component==NULL) {
+				leo->take(leo->left_forearm, bw2);
+				leo->take(leo->right_forearm,ar2);
+		}
+		if(t<1)
+		{
+
+		}
+		else if(t<2)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+		}
+		else if(t<3)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+		}
+		else if(t<4){
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+		}
+		else if(t<5)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+		}
+		else if(t<6)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(160,190,"27",font_18);
+		}
+		else if(t<7)
+		{
+				glColor3f(0,0,0);
+				output(150,200,"TWN",font);
+				glColor3f(0,0,0);
+				output(130,100,"MEX",font);
+				glColor3f(0,0,0);
+				output(150,190,"26",font_18);
+				glColor3f(1,0,0);
+				output(130,90,"28",font_18);
+				glColor3f(0,0,0);
+				output(160,190,"27",font_18);
+				glColor3f(1,0,0);
+				output(140,90,"28",font_18);
+		}
+		
+			zmin->plot();
+			leo->plot();
+	}
+
+}
+
+void zupset(double t,double t_start, double t_end,double zs,double ls){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		
+		Ground();
+		ScoreBar(zs,ls);
+		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=1.0;zmin->body->G=1.0;zmin->body->B=1.0;}
+		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
+		if(bw==NULL) 
+				bw=new Bow(-90.0);
+		if(bw2==NULL) 
+				bw2=new Bow(-90.0);
+		
+		if(ar==NULL)
+				ar=new Arrow(90.0);
+
+		if(ar2==NULL)
+				ar2=new Arrow(90.0);
+
+		if(zmin->left_forearm->component==NULL) {
+				zmin->take(zmin->left_forearm, bw);
+				zmin->take(zmin->right_forearm,ar);
+		}
+		if(leo->left_forearm->component==NULL) {
+				leo->take(leo->left_forearm, bw2);
+				leo->take(leo->right_forearm,ar2);
+		}
+		if(t<1)
+		{
+			zmin->setfront(100,200);
+			leo->setfront(80,100);
+		}
+		else if(t<2)
+		{
+			float dangle=30.0/1.0;
+			zmin->oLimbsrotate(zmin->head, dt*dangle);
+		}
+		else if(t<3){
+			float dangle=-90.0/1.0;
+			zmin->oLimbsrotate(zmin->right_arm, dt*dangle);
+			zmin->oLimbsrotate(zmin->right_forearm, dt*(-120));
+		}
+		else if(t<4)
+		{
+		
+		}
+		else if(t<5)
+		{
+			float dangle=-30.0/1.0;
+			zmin->oLimbsrotate(zmin->head, dt*dangle);
+			dangle=90.0/1.0;
+			zmin->oLimbsrotate(zmin->right_arm, dt*dangle);
+			zmin->oLimbsrotate(zmin->right_forearm, dt*(120));
+		}
+
+			zmin->plot();	
+			leo->plot();
+	}
+
+}
+void zcheer(double t,double t_start, double t_end,double zs,double ls){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		
+		Ground();
+		ScoreBar(zs,ls);
+		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=1.0;zmin->body->G=1.0;zmin->body->B=1.0;}
+		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
+		if(bw==NULL) 
+				bw=new Bow(-90.0);
+		if(bw2==NULL) 
+				bw2=new Bow(-90.0);
+		
+		if(ar==NULL)
+				ar=new Arrow(90.0);
+
+		if(ar2==NULL)
+				ar2=new Arrow(90.0);
+
+		if(zmin->left_forearm->component==NULL) {
+				zmin->take(zmin->left_forearm, bw);
+				zmin->take(zmin->right_forearm,ar);
+		}
+		if(leo->left_forearm->component==NULL) {
+				leo->take(leo->left_forearm, bw2);
+				leo->take(leo->right_forearm,ar2);
+		}
+		if(t<1)
+		{
+			zmin->setfront(100,200);
+			leo->setfront(80,100);
+		}
+		else if(t<2)
+		{
+			float dangle=120.0/1.0;
+			zmin->oLimbsrotate(zmin->right_forearm, dt*dangle);
+		}
+		else if(t<3){
+			float dangle=90.0/1.0;
+			zmin->oLimbsrotate(zmin->right_arm, dt*dangle);
+			zmin->oLimbsrotate(zmin->right_forearm, dt*(-30));
+		}
+		else if(t<4)
+		{
+			float dangle=-90.0/1.0;
+			zmin->oLimbsrotate(zmin->right_arm, dt*dangle);
+			zmin->oLimbsrotate(zmin->right_forearm, dt*(30));
+		}
+		else if(t<5)
+		{
+		}
+		else if(t<6)
+		{
+			float dangle=120.0/1.0;
+			zmin->oLimbsrotate(zmin->right_forearm, -dt*dangle);
+		}
+
+			zmin->plot();	
+			leo->plot();
+	}
+
+}
+void zshot(double t,double t_start, double t_end,double zs, double ls){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		
+		Ground();
+		ScoreBar(zs,ls);
+		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=1.0;zmin->body->G=1.0;zmin->body->B=1.0;}
+		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
+		if(bw==NULL) 
+				bw=new Bow(-90.0);
+		if(bw2==NULL) 
+				bw2=new Bow(-90.0);
+		
+		if(ar==NULL)
+				ar=new Arrow(90.0);
+
+		if(ar2==NULL)
+				ar2=new Arrow(90.0);
+
+		if(zmin->left_forearm->component==NULL) {
+				zmin->take(zmin->left_forearm, bw);
+				zmin->take(zmin->right_forearm,ar);
+		}
+		if(leo->left_forearm->component==NULL) {
+				leo->take(leo->left_forearm, bw2);
+				leo->take(leo->right_forearm,ar2);
+		}
+		if(t<1)
+		{
+			leo->setfront(80,100);
 			zmin->plot();
 		}
 		else if(t<2)
@@ -885,7 +1255,7 @@ void zshot(double t,double t_start, double t_end){
 		}
 		else if(t<9)
 		{
-			ar->Shift(dt*200);
+			ar->Shift(dt*250);
 			zmin->plot();
 			leo->plot();
 			t_pre=t;
@@ -932,11 +1302,126 @@ void ztarg(double t, double t_start, double t_end){
 	}
 }
 
-void lshot(double t,double t_start, double t_end){
+void ztarg1(double t, double t_start, double t_end){
 	if(t>=t_start&&t<t_end){	
 		t-=t_start;
 		double dt=t-t_pre;
 		t_pre=t;
+		if(ztarget==NULL)
+				ztarget=new Target();
+		if(t<1){
+			ztarget->reset();
+			ztarget->plot();
+		}
+		if(t<4)
+		{
+			ztarget->plot();
+			ztarget->shift1(dt*100,150,159);
+		}
+		ztarget->plot();
+	}
+}
+void ztarg2(double t, double t_start, double t_end){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		if(ztarget==NULL)
+				ztarget=new Target();
+		if(t<1){
+			ztarget->reset2();
+			ztarget->plot();
+		}
+		if(t<4)
+		{
+			ztarget->plot();
+			ztarget->shift2(dt*100,149,139);
+		}
+		ztarget->plot();
+	}
+}
+void ztarg3(double t, double t_start, double t_end){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		if(ztarget==NULL)
+				ztarget=new Target();
+		if(t<1){
+			ztarget->reset3();
+			ztarget->plot();
+		}
+		if(t<4)
+		{
+			ztarget->plot();
+			ztarget->shift3(dt*100,172,150);
+		}
+		ztarget->plot();
+	}
+}
+void ltarg1(double t, double t_start, double t_end){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		if(ltarget==NULL)
+				ltarget=new Target();
+		if(t<1){
+			ltarget->reset();
+			ltarget->plot();
+		}
+		if(t<4)
+		{
+			ltarget->plot();
+			ltarget->shift1(dt*100,152,149);
+		}
+		ltarget->plot();
+	}
+}
+void ltarg2(double t, double t_start, double t_end){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		if(ltarget==NULL)
+				ltarget=new Target();
+		if(t<1){
+			ltarget->reset2();
+			ltarget->plot();
+		}
+		if(t<4)
+		{
+			ltarget->plot();
+			ltarget->shift2(dt*100,164.14,135.86);
+		}
+		ltarget->plot();
+	}
+}
+void ltarg3(double t, double t_start, double t_end){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		if(ltarget==NULL)
+				ltarget=new Target();
+		if(t<1){
+			ltarget->reset3();
+			ltarget->plot();
+		}
+		if(t<4)
+		{
+			ltarget->plot();
+			ltarget->shift3(dt*100,150,130);
+		}
+		ltarget->plot();
+	}
+}
+void lshot(double t,double t_start, double t_end,double zs,double ls){
+	if(t>=t_start&&t<t_end){	
+		t-=t_start;
+		double dt=t-t_pre;
+		t_pre=t;
+		ScoreBar(zs,ls);
 		Ground();
 		if(zmin==NULL) {zmin=new Person(100,200);zmin->body->R=0.0;zmin->body->G=0.0;zmin->body->B=0.8;}
 		if(leo==NULL){leo=new Person(80,100);leo->body->R=0.0;leo->body->G=0.0;leo->body->B=0.0;}
@@ -960,6 +1445,7 @@ void lshot(double t,double t_start, double t_end){
 				leo->take(leo->right_forearm,ar2);
 		}
 		zmin->setfront(100,200);
+		zmin->plot();
 		if(t<1){
 			leo->plot();
 		}
@@ -995,7 +1481,7 @@ void lshot(double t,double t_start, double t_end){
 			leo->plot();
 			t_pre=t;
 		}
-		zmin->plot();
+
 	}
 
 }
@@ -1065,20 +1551,20 @@ void ScoreBar(int zs,int ls)
 	glColor3f(0.0/255.0,0.0/255.0,0.0/255.0);
 	char* twn="TWN";
 	char* mex="MEX";
-	output(10,283,twn);
-	output(10,273,mex);
+	output(10,283,twn,font_10);
+	output(10,273,mex,font_10);
 //inning
 	char *tin="0";
 	char *xin="4";
-	output(70,283,tin);
-	output(70,273,xin);
+	output(70,283,tin,font_10);
+	output(70,273,xin,font_10);
 //score
 	char tsc[3];
 	sprintf(tsc,"%d",zs);
 	char xsc[3];
 	sprintf(xsc,"%d",ls);
-	output(85,283,tsc);
-	output(85,273,xsc);
+	output(85,283,tsc,font_10);
+	output(85,273,xsc,font_10);
 
 }
 void Kanban(double x,double y)
@@ -1103,7 +1589,7 @@ void Kanban(double x,double y)
 }
 void Ground()
 {
-	ScoreBar(0,0);
+	//ScoreBar(0,0);
 //Kanban
 	for(int idx=0;idx<6;idx++)
 	{
@@ -1148,21 +1634,68 @@ void Ground()
 }
 void display(void)
 {
-	double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+	double t = glutGet(GLUT_ELAPSED_TIME) / 500.0;
 	glClear(GL_COLOR_BUFFER_BIT);
 	double t_start, t_end;
 	t_start=t_end=0.0;
 	glPushMatrix();
-		//plottarget(150.0,150.0);
-			
+		
+
+
+		tctr(&t_start, &t_end, 7);
+		firstscene(t, t_start, t_end);
+//1st	
+		tctr(&t_start, &t_end, 9);
+		zshot(t, t_start, t_end, 0, 0);
+
+		tctr(&t_start, &t_end, 5);
+		ztarg1(t, t_start, t_end);
+		//cheer
+		tctr(&t_start, &t_end, 6);
+		zcheer(t, t_start, t_end,10,0);
+		//
+		tctr(&t_start, &t_end, 10);
+		lshot(t, t_start, t_end,10,0);
+		
+		tctr(&t_start, &t_end, 5);
+		ltarg1(t, t_start, t_end);
+//2nd
+		tctr(&t_start, &t_end, 9);
+		zshot(t, t_start, t_end, 10, 10);
+		
+		tctr(&t_start, &t_end, 5);
+		ztarg2(t, t_start, t_end);	
+		
+		tctr(&t_start, &t_end, 10);
+		lshot(t, t_start, t_end,19,10);
+		
+		tctr(&t_start, &t_end, 5);
+		ltarg2(t, t_start, t_end);
+
+//3rd
 
 		tctr(&t_start, &t_end, 9);
-		zshot(t, t_start, t_end);
+		zshot(t, t_start, t_end, 19, 18);
+		
+		tctr(&t_start, &t_end, 5);
+		ztarg3(t, t_start, t_end);	
+		//upset
+		tctr(&t_start, &t_end, 5);
+		zupset(t, t_start, t_end,27,18);
+		//
 		tctr(&t_start, &t_end, 10);
-		lshot(t, t_start, t_end);
-		tctr(&t_start, &t_end, 8);
-		ztarg(t, t_start, t_end);
-//		squatpic(t,14.0,19.0);
+		lshot(t, t_start, t_end, 27, 18);
+		
+		tctr(&t_start, &t_end, 5);
+		ltarg3(t, t_start, t_end);
+
+
+		tctr(&t_start, &t_end, 7);
+		finalscene(t, t_start, t_end);
+
+
+//		tctr(&t_start, &t_end, 8);
+//		ztarg(t, t_start, t_end);
 
 	glPopMatrix();
 	glFlush();
